@@ -2,7 +2,7 @@
 import cv2
 import math
 import numpy
-from testevisao_class import *
+from classes_visao import *
 
 # variáveis
 ip = ImageProcessor()
