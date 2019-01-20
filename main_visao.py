@@ -45,7 +45,6 @@ def main():
         
     cap.release()
     cv2.destroyAllWindows()
-tracker = cv2.TrackerMOSSE_create() # MOSSE for tracking
 
 class ImageProcessor:
     def pre_process(frame): # returns the image before it gets filtered
@@ -73,15 +72,6 @@ class FindObject:
     # fiter
     ratioFilter = [0.0, 1.0] # removes non-sense figures
     solidityFilter = [0.0, 1.0] # removes figures that have holes (are not solid)
-    
-    def _find_tracker(self, frame):
-        if self.trackerON: # defined later, but is used to find tracker
-            bbox = tracker.update(frame)
-            x,y,w,h = bbox[1] # makes sure you can still get the image from the bounding box if it escapes
-            w += 50
-            h += 50 
-            return (x,y,w,h)
-        return False # we shouldn't find trackers if we don't have enabled trackers
     
     def _find_detection(self, frame, bbox = [0,0,640, 480]):
         x1, y1, w, h = bbox # gets the bounding box coordinates
@@ -119,19 +109,14 @@ class FindObject:
             if result: # if we find any object, we`ll track it
                 x, y, w, h = result[0].rectangle
                 rectangle = (x,y,w,h)
-                tracker.init(frame, rectangle) 
-                self.trackerON = True
             else:
-                return [] # random workaround
-        else:
-            result = self._find_tracker(frame) # if we don't find any object, we should be looking for some
-            result = self._find_detection(ImageProcessor.process(frame)) # if we don't find a tracker, we'll try detecting objects
+                result = [] # random workaround
+   
         self.i += 1
         return result
     
     def __init__(self):
         self.i = 0
-        self.trackerON = False
     
 class TrackedObject:
 
